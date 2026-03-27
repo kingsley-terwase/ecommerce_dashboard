@@ -32,7 +32,7 @@ export default function OrderInsight() {
         </Stack>
         <Box
           display="grid"
-          gridTemplateColumns={{ xs: "1fr", md: "repeat(2, 1fr)" }}
+          gridTemplateColumns={{ xs: "repeat(2, 1fr)", md: "repeat(2, 1fr)" }}
           gap={spacingTokens.lg}
           alignItems="center"
         >
