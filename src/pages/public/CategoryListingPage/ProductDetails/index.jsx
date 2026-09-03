@@ -41,7 +41,7 @@ import KeyHighlights from "./KeyHighlights";
 import facebookIcon from "/Image/fb.png";
 import twitterIcon from "/Image/x.png";
 import whatsappIcon from "/Image/whatsapp.png";
-import ProductSummaryCard from "./ProductSummaryCard ";
+import ProductSummaryCard from "./ProductSummaryCard"
 
 const DEFAULT_PRODUCT = {
   id: 1,

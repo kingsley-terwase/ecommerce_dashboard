@@ -7,16 +7,13 @@ import {
   PersonAdd24Regular,
 } from "@fluentui/react-icons";
 import { useColor } from "@/contexts/color";
-import { spacingTokens, radius, radiusTokens } from "@/lib/theme";
+import { spacingTokens, radius, radiusTokens, typefaces } from "@/lib/theme";
 import { useReveal } from "../Hooks";
 import ProductMarquee from "../ProductMarquee";
 import TrustBadge from "./TrustBadge";
 import LiveBadge from "./LiveBadge";
 import { useNavigate } from "react-router-dom";
 
-// Recommend adding this to your MUI theme's typography.fontFamily instead
-// of repeating it per-component — kept local here only so this file is
-// self-contained until that theme change lands.
 const HEADING_FONT = "Syne";
 
 // @ts-ignore
@@ -156,7 +153,7 @@ export default function Hero() {
         <RevealBlock delay={240} children={undefined} sx={undefined}>
           <Typography
             sx={{
-              fontFamily: HEADING_FONT,
+              fontFamily: typefaces.tertiary,
               fontSize: { xs: 16, md: 18 },
               color: fg.secondary,
               maxWidth: 480,

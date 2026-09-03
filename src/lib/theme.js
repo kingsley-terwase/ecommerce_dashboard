@@ -11,6 +11,10 @@ export const fontSizes = {
 
 export const typefaces = {
   default: "DM Sans",
+  primary: "Poppins",
+  secondary: "Inter",
+  tertiary:"Syne",
+  unique: "Bebas Neue",
 };
 
 export const buttonColors = {

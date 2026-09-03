@@ -1,69 +1,44 @@
 // @ts-nocheck
 import { keyframes } from "@emotion/react";
 import { Box, Stack, Typography } from "@mui/material";
-import {
-  Sparkle24Filled,
-  Sparkle24Filled as SparkleBadgeIcon,
-  CheckmarkCircle24Filled,
-} from "@fluentui/react-icons";
-import { useColor } from "@/contexts/color";
-import { useCountUp, useReveal } from "../../HomePage/Hooks";
+import { Sparkle24Filled } from "@fluentui/react-icons";
 import { useNavigate } from "react-router-dom";
+import { useColor } from "@/contexts/color";
+import MarketplacePulse from "./MarketPlacePulse";
+import Stat from "./Stat";
+import { FONT, AMBER, STATS } from "./constants";
+import { typefaces } from "@/lib/theme";
 
-const FONT = "Poppins";
-
-const floatY = keyframes`
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+const drift = keyframes`
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(3%, -3%); }
 `;
 
-const STATS = [
-  { value: 1840, suffix: "+", label: "ACTIVE SELLERS" },
-  { value: 26, suffix: "K+", label: "PRODUCTS LISTED" },
-  { value: 97, suffix: "%", label: "BUYER SATISFACTION" },
-];
+const drift2 = keyframes`
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-3%, 3%); }
+`;
 
-function Stat({ stat }) {
-  const [ref, isVisible] = useReveal();
+const livePulse = keyframes`
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+`;
 
-  const value = useCountUp(stat.value, {
-    duration: 1400,
-    start: isVisible,
-  });
+const fadeInUp = keyframes`
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+`;
 
-  return (
-    <Stack ref={ref} sx={{ minWidth: 90 }}>
-      <Typography
-        sx={{
-          fontSize: { xs: 22, md: 28 },
-          fontWeight: 800,
-          color: "#fff",
-        }}
-      >
-        {value.toLocaleString()}
-        {stat.suffix}
-      </Typography>
+// Staggered entrance timing for each content block — one orchestrated
+// load-in sequence rather than everything animating independently.
+const reveal = (delayMs) => ({
+  animation: `${fadeInUp} 0.6s ease-out ${delayMs}ms both`,
+  "@media (prefers-reduced-motion: reduce)": { animation: "none" },
+});
 
-      <Typography
-        sx={{
-          fontSize: 10,
-          fontWeight: 600,
-          letterSpacing: "0.06em",
-          color: "rgba(255,255,255,0.7)",
-        }}
-      >
-        {stat.label}
-      </Typography>
-    </Stack>
-  );
-}
 export default function AuthLeftPanel() {
   const { main } = useColor();
   const navigate = useNavigate();
-
-  const handleHome = () => {
-    navigate("/");
-  };
 
   return (
     <Box
@@ -73,189 +48,157 @@ export default function AuthLeftPanel() {
         flexDirection: "column",
         minHeight: "100vh",
         width: "45%",
-        p: 2,
+        p: 4,
         overflow: "hidden",
+        backgroundColor: "#070A12",
       }}
     >
-      <Box
-        component="img"
-        src="https://images.unsplash.com/photo-1556740758-90de374c12ad?auto=format&fit=crop&w=900&q=70"
-        alt=""
-        sx={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-        }}
-      />
+      {/* Dot-grid texture — quiet, on-brand backdrop instead of a stock photo */}
       <Box
         sx={{
           position: "absolute",
           inset: 0,
-          background:
-            "linear-gradient(160deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.9) 100%)",
+          backgroundImage: "radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
         }}
       />
+      {/* Two soft drifting glows — brand blue and amber, low opacity */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: "-15%",
+          left: "-10%",
+          width: 420,
+          height: 420,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${main.primary}33 0%, transparent 70%)`,
+          animation: `${drift} 12s ease-in-out infinite`,
+          "@media (prefers-reduced-motion: reduce)": { animation: "none" },
+        }}
+      />
+      {/* <Box
+        sx={{
+          position: "absolute",
+          bottom: "-15%",
+          right: "-10%",
+          width: 380,
+          height: 380,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${AMBER}26 0%, transparent 70%)`,
+          animation: `${drift2} 14s ease-in-out infinite`,
+          "@media (prefers-reduced-motion: reduce)": { animation: "none" },
+        }}
+      /> */}
 
+      {/* Header row: wordmark + live indicator */}
       <Stack
+        direction="row"
         alignItems="center"
-        justifyContent="center"
-        gap={0.3}
-        sx={{
-          position: "absolute",
-          top: 28,
-          right: 28,
-          zIndex: 1,
-          width: 64,
-          height: 64,
-          borderRadius: 2,
-          backgroundColor: "rgba(255,255,255,0.1)",
-          border: "1px solid rgba(255,255,255,0.25)",
-          backdropFilter: "blur(4px)",
-          animation: `${floatY} 3.5s ease-in-out infinite`,
-        }}
+        justifyContent="space-between"
+        sx={{ position: "relative", zIndex: 1, mb: 6, ...reveal(0) }}
       >
-        <SparkleBadgeIcon style={{ fontSize: 16, color: main.primary }} />
         <Typography
+          onClick={() => navigate("/")}
           sx={{
-            fontFamily: FONT,
-            fontSize: 8,
+            fontFamily: typefaces.tertiary,
+            fontSize: 20,
             fontWeight: 700,
-            letterSpacing: "0.05em",
             color: "#fff",
+            letterSpacing: "-0.01em",
+            cursor: "pointer",
           }}
         >
-          FEATURED
+          TETY
+          <Box component="span" sx={{ color: main.primary }}>
+            HUB
+          </Box>
         </Typography>
-      </Stack>
 
-      <Typography
-        onClick={handleHome}
-        sx={{
-          position: "relative",
-          zIndex: 1,
-          fontFamily: FONT,
-          fontSize: 28,
-          fontWeight: 900,
-          color: "#fff",
-          letterSpacing: "-0.01em",
-          cursor: "pointer",
-          mb: 5,
-        }}
-      >
-        TETY
-        <Box component="span" sx={{ color: main.primary }}>
-          HUB
-        </Box>
-      </Typography>
-
-      <Box sx={{ position: "relative", zIndex: 1 }}>
-        <Stack direction="row" alignItems="center" gap={0.6} sx={{ mb: 2 }}>
-          <Sparkle24Filled style={{ fontSize: 14, color: "#fbbf24" }} />
+        <Stack
+          direction="row"
+          alignItems="center"
+          gap={0.7}
+          sx={{
+            px: 1.4,
+            py: 0.6,
+            borderRadius: "999px",
+            border: "1px solid rgba(255,255,255,0.18)",
+            backgroundColor: "rgba(255,255,255,0.06)",
+          }}
+        >
+          <Box
+            sx={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              backgroundColor: AMBER,
+              animation: `${livePulse} 1.6s ease-in-out infinite`,
+              "@media (prefers-reduced-motion: reduce)": { animation: "none" },
+            }}
+          />
           <Typography
             sx={{
               fontFamily: FONT,
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: "0.08em",
+              color: "#fff",
+            }}
+          >
+            LIVE MARKETPLACE
+          </Typography>
+        </Stack>
+      </Stack>
+
+      <Box sx={{ position: "relative", zIndex: 1 }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          gap={0.6}
+          sx={{ mb: 2, ...reveal(80) }}
+        >
+          <Sparkle24Filled style={{ fontSize: 14, color: AMBER }} />
+          <Typography
+            sx={{
+              fontFamily: typefaces.tertiary,
               fontSize: 12,
               fontWeight: 700,
               letterSpacing: "0.08em",
-              color: "#fbbf24",
+              color: AMBER,
             }}
           >
             THE MARKETPLACE FOR EVERYONE
           </Typography>
         </Stack>
 
-        <Typography
-          sx={{
-            fontFamily: FONT,
-            fontSize: { md: 40, lg: 48 },
-            fontWeight: 800,
-            lineHeight: 1.05,
-            color: "#fff",
-            mb: 0.5,
-          }}
-        >
-          WHERE
-        </Typography>
-        <Typography
-          sx={{
-            fontFamily: FONT,
-            fontSize: { md: 40, lg: 48 },
-            fontWeight: 800,
-            lineHeight: 1.25,
-            color: "transparent",
-            WebkitTextStroke: "1.5px #fbbf24",
-            mb: 0.5,
-          }}
-        >
-          BUYERS & SELLERS
-        </Typography>
-        <Typography
-          sx={{
-            fontFamily: FONT,
-            fontSize: { md: 40, lg: 48 },
-            fontWeight: 800,
-            lineHeight: 1.05,
-            color: "#fff",
-            mb: 3,
-          }}
-        >
-          MEET
-        </Typography>
-
-        <Typography
-          sx={{
-            fontFamily: FONT,
-            fontSize: 15,
-            color: "rgba(255,255,255,0.85)",
-            maxWidth: 380,
-            mb: 3,
-          }}
-        >
-          Connect with verified sellers, discover real products, and build a
-          store of your own — all in one place.
-        </Typography>
-
-        <Stack gap={1.4} sx={{ mb: 4 }}>
-          {[
-            "Verified sellers across every category",
-            "Real-time order tracking",
-            "Secure payments, every time",
-            "24/7 buyer & seller support",
-          ].map((item) => (
-            <Stack key={item} direction="row" alignItems="center" gap={1.2}>
-              <CheckmarkCircle24Filled
-                style={{
-                  fontSize: 18,
-                  backgroundColor: "#fff",
-                  borderRadius: 50,
-                  color: main.primary,
-                  flexShrink: 0,
-                }}
-              />
-              <Typography
-                sx={{
-                  fontFamily: FONT,
-                  fontSize: 14,
-                  color: "rgba(255,255,255,0.92)",
-                }}
-              >
-                {item}
-              </Typography>
-            </Stack>
-          ))}
+        {/* Headline: "WHERE BUYERS & SELLERS" wraps inline together;
+            "MEET" is the oversized gradient payoff on its own line. */}
+        <Stack sx={{ mb: 3.5, maxWidth: 480, ...reveal(160) }}>
+          <Stack direction="row" flexWrap="wrap" alignItems="baseline" columnGap={1.2}>
+            <Typography
+              sx={{
+                 fontFamily: typefaces.tertiary,
+                fontSize: { md: 32, lg: 50 },
+                fontWeight: 700,
+                lineHeight: 1.15,
+                color: "#fff",
+              }}
+            >
+              WHERE   BUYERS 
+               &amp; SELLERS MEET
+            </Typography>
+           
+          </Stack>
         </Stack>
 
-        <Box
-          sx={{
-            height: "1px",
-            backgroundColor: "rgba(255,255,255,0.2)",
-            mb: 3,
-          }}
-        />
+       
+        <Box sx={reveal(320)}>
+          <MarketplacePulse />
+        </Box>
 
-        <Stack direction="row" gap={4} sx={{ mb: 2 }}>
+        <Box sx={{ height: "1px", backgroundColor: "rgba(255,255,255,0.14)", mb: 3, ...reveal(360) }} />
+
+        <Stack direction="row" gap={4} sx={reveal(400)}>
           {STATS.map((s) => (
             <Stat key={s.label} stat={s} />
           ))}

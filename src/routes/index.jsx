@@ -1,5 +1,4 @@
 import { DashboardLayout, PublicLayout } from "@/layouts";
-import { ResetPasswordPage } from "@/pages/auth";
 import {
   AddProductsPage,
   AiPage,
@@ -7,7 +6,6 @@ import {
   CreateOrderPage,
   CustomerOverviewPage,
   CustomerPage,
-  DesignSystemPage,
   EditOrderPage,
   EditProductsPage,
   // ListingModerationPage,
@@ -53,7 +51,7 @@ import {
 } from "@/pages/public";
 // import { CompanyAccountPage, VendorAccountPage } from "@/pages/settings";
 import { useAuthStore } from "@/store/auth";
-import { ROLES, SUBROLES } from "@/lib/roles";
+import { ROLES } from "@/lib/roles";
 import { Routes as BaseRoutes, Route } from "react-router-dom";
 import ProductDetailPage from "@/pages/public/CategoryListingPage/ProductDetails";
 import SellersDirectory from "@/pages/dashboard/AdminDashboard/SellersDirectory";
@@ -68,16 +66,21 @@ import AnalyticsReportsPage from "@/pages/dashboard/AdminDashboard/AnalyticsRepo
 import ContentManagementPage from "@/pages/dashboard/AdminDashboard/ContentManagementPage";
 import AnnouncementsPage from "@/pages/dashboard/AdminDashboard/AnnouncementsPage";
 import SupportTicketsPage from "@/pages/dashboard/AdminDashboard/SupportTicketsPage";
+import RequireAuth from "@/Utils/RequireAuth";
+import NotFoundPage from "@/pages/public/NotFoundPage";
+import ForgotPasswordPage from "@/pages/public/Auth/ForgotPassword";
 
 export default function Routes() {
-  const { permission } = useAuthStore.getState();
-  const ROLE = permission?.role_id;
-  const SUB_ROLE = permission?.subrole_id;
+  // Reactive subscription — NOT .getState(). A snapshot read here means this
+  // component never re-renders when setAuth() runs during login, so the
+  // route tree stays built for "logged out" even after navigate() fires,
+  // causing a 404 flash until a manual refresh forces a fresh render.
+  // @ts-ignore
+  const permission = useAuthStore((s) => s.permission);
 
-  const isAdmin = ROLE == ROLES.ADMIN;
-  const isPlatformAdmin = isAdmin && SUB_ROLE == SUBROLES.PLATFORM_ADMIN;
-  const isSeller = ROLE == ROLES.SELLER;
-  const isCustomer = ROLE == ROLES.CUSTOMER;
+  const isAdmin = permission?.role === ROLES.ADMIN;
+  const isSeller = permission?.role === ROLES.SELLER;
+  const isCustomer = permission?.role === ROLES.CUSTOMER;
 
   return (
     <BaseRoutes>
@@ -108,174 +111,169 @@ export default function Routes() {
       {/* <Route element={<AuthLayout />}> */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/password/reset" element={<ResetPasswordPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      {/* <Route path="/password/reset" element={<ResetPasswordPage />} /> */}
       {/* </Route> */}
 
-      <Route element={<DashboardLayout />}>
-        <Route path="/design/system" element={<DesignSystemPage />} />
+      {/* Pathless guard — wraps every dashboard route without claiming a URL
+          of its own. Redirects to /login if not authenticated; otherwise
+          renders DashboardLayout + whichever role-specific routes match. */}
+      <Route element={<RequireAuth />}>
+        <Route element={<DashboardLayout />}>
+          {/* <Route path="/design/system" element={<DesignSystemPage />} /> */}
 
-        {isSeller && (
-          <>
-            <Route path="/dashboard/seller" element={<SellerOverviewPage />} />
-            <Route
-              path="/dashboard/seller/products"
-              element={<ProductsPage />}
-            />
-            <Route
-              path="/dashboard/seller/products/add"
-              element={<AddProductsPage />}
-            />
-            <Route
-              path="/dashboard/seller/products/:id/edit"
-              element={<EditProductsPage />}
-            />
-            <Route
-              path="/dashboard/seller/campaign"
-              element={<CampaignPage />}
-            />
-            <Route
-              path="/dashboard/seller/services"
-              element={<ServicePage />}
-            />
-            <Route path="/dashboard/seller/ai" element={<AiPage />} />
-            <Route path="/dashboard/seller/orders" element={<OrderPage />} />
-            <Route
-              path="/dashboard/seller/orders/:id"
-              element={<OrderDetail />}
-            />
-            <Route
-              path="/dashboard/seller/create-order"
-              element={<CreateOrderPage />}
-            />
-            <Route
-              path="/dashboard/seller/edit-order"
-              element={<EditOrderPage />}
-            />
-            <Route
-              path="/dashboard/seller/customers"
-              element={<CustomerPage />}
-            />
-            <Route
-              path="/dashboard/seller/listings"
-              element={<ListingsPage />}
-            />
-            <Route
-              path="/dashboard/seller/messages"
-              element={<MessagesPage />}
-            />
-            <Route
-              path="/dashboard/seller/promotions"
-              element={<PromotionsPage />}
-            />
-            <Route path="/dashboard/seller/reviews" element={<ReviewsPage />} />
-            <Route
-              path="/dashboard/seller/seller-settings"
-              element={<SellerSettingsPage />}
-            />
-          </>
-        )}
+          {isSeller && (
+            <>
+              <Route path="/dashboard/seller" element={<SellerOverviewPage />} />
+              <Route
+                path="/dashboard/seller/products"
+                element={<ProductsPage />}
+              />
+              <Route
+                path="/dashboard/seller/products/add"
+                element={<AddProductsPage />}
+              />
+              <Route
+                path="/dashboard/seller/products/:id/edit"
+                element={<EditProductsPage />}
+              />
+              <Route
+                path="/dashboard/seller/campaign"
+                element={<CampaignPage />}
+              />
+              <Route
+                path="/dashboard/seller/services"
+                element={<ServicePage />}
+              />
+              <Route path="/dashboard/seller/ai" element={<AiPage />} />
+              <Route path="/dashboard/seller/orders" element={<OrderPage />} />
+              <Route
+                path="/dashboard/seller/orders/:id"
+                element={<OrderDetail />}
+              />
+              <Route
+                path="/dashboard/seller/create-order"
+                element={<CreateOrderPage />}
+              />
+              <Route
+                path="/dashboard/seller/edit-order"
+                element={<EditOrderPage />}
+              />
+              <Route
+                path="/dashboard/seller/customers"
+                element={<CustomerPage />}
+              />
+              <Route
+                path="/dashboard/seller/listings"
+                element={<ListingsPage />}
+              />
+              <Route
+                path="/dashboard/seller/messages"
+                element={<MessagesPage />}
+              />
+              <Route
+                path="/dashboard/seller/promotions"
+                element={<PromotionsPage />}
+              />
+              <Route path="/dashboard/seller/reviews" element={<ReviewsPage />} />
+              <Route
+                path="/dashboard/seller/seller-settings"
+                element={<SellerSettingsPage />}
+              />
+            </>
+          )}
 
-        {isCustomer && (
-          <>
-            <Route
-              path="/dashboard/customer"
-              element={<CustomerOverviewPage />}
-            />
-            <Route path="/dashboard/customer/orders" element={<OrderPage />} />
-            <Route
-              path="/dashboard/customer/orders/:id"
-              element={<OrderDetail />}
-            />
-          </>
-        )}
+          {isCustomer && (
+            <>
+              <Route
+                path="/dashboard/customer"
+                element={<CustomerOverviewPage />}
+              />
+              <Route path="/dashboard/customer/orders" element={<OrderPage />} />
+              <Route
+                path="/dashboard/customer/orders/:id"
+                element={<OrderDetail />}
+              />
+            </>
+          )}
 
-        {isAdmin && (
-          <>
-            <Route path="/dashboard/admin" element={<AdminOverviewPage />} />
-            <Route
-              path="/dashboard/admin/orders"
-              element={<AdminOrdersPage />}
-            />
-            <Route
-              path="/dashboard/admin/orders/:id"
-              element={<OrderDetail />}
-            />
-            {isPlatformAdmin && (
-              <>
-                <Route
-                  path="/dashboard/admin/seller-approvals"
-                  element={<SellerAprovalsPage />}
-                />
-                <Route
-                  path="/dashboard/admin/listing-moderation"
-                  element={<ListingModerationPage />}
-                />
-                <Route
-                  path="/dashboard/admin/seller-directory"
-                  element={<SellersDirectory />}
-                />
-                <Route
-                  path="/dashboard/admin/buyer-directory"
-                  element={<BuyersDirectoryPage />}
-                />
-                <Route
-                  path="/dashboard/admin/disputes"
-                  element={<DisputesResolutionPage />}
-                />
-                <Route
-                  path="/dashboard/admin/payments"
-                  element={<PaymentsPayoutsPage />}
-                />
-                <Route
-                  path="/dashboard/admin/promotions"
-                  element={<PromotionsCouponsPage />}
-                />
-                <Route
-                  path="/dashboard/admin/kyc"
-                  element={<KYCVerificationPage />}
-                />
-                <Route
-                  path="/dashboard/admin/activity-log"
-                  element={<AdminActivityLogPage />}
-                />
-                <Route
-                  path="/dashboard/admin/analytics"
-                  element={<AnalyticsReportsPage />}
-                />
-                <Route
-                  path="/dashboard/admin/content-management"
-                  element={<ContentManagementPage />}
-                />
-                <Route
-                  path="/dashboard/admin/announcements"
-                  element={<AnnouncementsPage />}
-                />
-                <Route
-                  path="/dashboard/admin/support-tickets"
-                  element={<SupportTicketsPage />}
-                />
-                <Route
-                  path="/dashboard/admin/reviews"
-                  element={<ReviewsModerationPage />}
-                />
-
-                <Route
-                  path="/dashboard/admin/settings"
-                  element={<AdminSettingsPage />}
-                />
-              </>
-            )}
-          </>
-        )}
+          {isAdmin && (
+            <>
+              <Route path="/dashboard/admin" element={<AdminOverviewPage />} />
+              <Route
+                path="/dashboard/admin/orders"
+                element={<AdminOrdersPage />}
+              />
+              <Route
+                path="/dashboard/admin/orders/:id"
+                element={<OrderDetail />}
+              />
+              <Route
+                path="/dashboard/admin/seller-approvals"
+                element={<SellerAprovalsPage />}
+              />
+              <Route
+                path="/dashboard/admin/listing-moderation"
+                element={<ListingModerationPage />}
+              />
+              <Route
+                path="/dashboard/admin/seller-directory"
+                element={<SellersDirectory />}
+              />
+              <Route
+                path="/dashboard/admin/buyer-directory"
+                element={<BuyersDirectoryPage />}
+              />
+              <Route
+                path="/dashboard/admin/disputes"
+                element={<DisputesResolutionPage />}
+              />
+              <Route
+                path="/dashboard/admin/payments"
+                element={<PaymentsPayoutsPage />}
+              />
+              <Route
+                path="/dashboard/admin/promotions"
+                element={<PromotionsCouponsPage />}
+              />
+              <Route
+                path="/dashboard/admin/kyc"
+                element={<KYCVerificationPage />}
+              />
+              <Route
+                path="/dashboard/admin/activity-log"
+                element={<AdminActivityLogPage />}
+              />
+              <Route
+                path="/dashboard/admin/analytics"
+                element={<AnalyticsReportsPage />}
+              />
+              <Route
+                path="/dashboard/admin/content-management"
+                element={<ContentManagementPage />}
+              />
+              <Route
+                path="/dashboard/admin/announcements"
+                element={<AnnouncementsPage />}
+              />
+              <Route
+                path="/dashboard/admin/support-tickets"
+                element={<SupportTicketsPage />}
+              />
+              <Route
+                path="/dashboard/admin/reviews"
+                element={<ReviewsModerationPage />}
+              />
+              <Route
+                path="/dashboard/admin/settings"
+                element={<AdminSettingsPage />}
+              />
+            </>
+          )}
+        </Route>
       </Route>
 
-      {/* <Route element={<SettingsLayout />}>
-        <Route path="/settings/account" element={<VendorAccountPage />} />
-        <Route
-          path="/settings/company/general"
-          element={<CompanyAccountPage />}
-        />
-      </Route> */}
+      <Route path="*" element={<NotFoundPage />} />
     </BaseRoutes>
   );
 }

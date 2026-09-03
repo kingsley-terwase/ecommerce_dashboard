@@ -8,7 +8,6 @@ import {
   CircleSparkleRegular,
   PersonRegular,
   GlanceRegular,
-  PersonStarRegular,
   ShoppingBagRegular,
   StarRegular,
   MailRegular,
@@ -30,6 +29,7 @@ import {
 /** @typedef {import("@/types/global.d.js").NavItem & { color?: string }} NavItemProps */
 
 export function useNavigationMenu() {
+  // @ts-ignore
   const { permission } = useAuthStore.getState();
 
   /** @type {string} */
@@ -38,7 +38,8 @@ export function useNavigationMenu() {
 
   /** @type {Record<string, NavItemProps[]>} */
   const menu = {
-    platform_admin: [
+    
+    super_admin: [
       {
         label: "Overview",
         path: "/dashboard/admin",
@@ -141,26 +142,7 @@ export function useNavigationMenu() {
       },
     ],
 
-    support_staff: [
-      { label: "Overview", path: "/dashboard/admin", icon: GlanceRegular },
-      {
-        label: "Seller Approvals",
-        path: "/dashboard/admin/seller-approvals",
-        icon: PersonStarRegular,
-      },
-      {
-        label: "Listing Moderation",
-        path: "/dashboard/admin/listing-moderation",
-        icon: DocumentLandscapeDataRegular,
-      },
-      {
-        label: "Orders",
-        path: "/dashboard/admin/orders",
-        icon: ShoppingBagRegular,
-      },
-    ],
-
-    seller: [
+    vendor: [
       { label: "Overview", path: "/dashboard/seller", icon: GlanceRegular },
       {
         label: "Products",
@@ -244,6 +226,7 @@ export function useNavigationMenu() {
 }
 
 export function useSettingsMenu() {
+  // @ts-ignore
   const { permission } = useAuthStore.getState();
 
   /** @type {string} */
@@ -252,7 +235,7 @@ export function useSettingsMenu() {
 
   /** @type {Record<string, NavItemProps[]>} */
   const menu = {
-    platform_admin: [
+    admin: [
       { label: "Account", path: "/settings/account", icon: PersonRegular },
     ],
     seller: [

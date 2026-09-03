@@ -1,7 +1,9 @@
 import { useAuthStore } from "@/store/auth";
 
 export function usePermission() {
+  // @ts-ignore
   const { permission } = useAuthStore.getState();
+  // @ts-ignore
   const userPermissions = permission?.permissions;
   if (!userPermissions) return false;
 

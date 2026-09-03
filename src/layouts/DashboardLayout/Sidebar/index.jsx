@@ -6,9 +6,10 @@ import { useNavigationMenu } from "@/lib/navigation";
 import { useLocation, useNavigate } from "react-router-dom";
 import { footerHeight, headerHeight } from "./lib";
 import { useColor } from "@/contexts/color";
-import { useLogOut } from "@/queries/auth";
-import { ScreenLoader, Typography } from "@/components/ui";
+import { Typography } from "@/components/ui";
 import { NavLink } from "@/components/shared";
+import { useLogout } from "@/Hooks/auth";
+import AppLoader from "@/Utils/AppLoader";
 
 /** @typedef {import("@/types/global.d").NavItem} NavItemProps */
 export default function Sidebar() {
@@ -21,9 +22,9 @@ export default function Sidebar() {
 
   const { status, main } = useColor();
 
-  const [selected, setSelected] = useState(/** @type {number | null} */ (null));
+  const [selected, setSelected] = useState(/** @type {number | null} */(null));
 
-  const { loading: logoutLoading, logOut } = useLogOut();
+  const { loading: logoutLoading, logout } = useLogout();
 
   /**
    * @param {NavItemProps} item
@@ -45,11 +46,14 @@ export default function Sidebar() {
   }
 
   async function handleLogout() {
-    await logOut();
+    await logout();
   }
 
   return (
     <>
+      {logoutLoading && <AppLoader show={logoutLoading} tagline="Logging out... 🤯" progress={undefined} onHidden={undefined} />}
+
+
       <Box ref={navRef} sx={{ height: "100vh" }}>
         <Stack
           display="flex"
@@ -63,8 +67,10 @@ export default function Sidebar() {
             src={theme === "dark" ? "/logo-light.png" : "/logo-dark.png"}
           ></Box> */}
           <Typography
+            onClick={() => navigate("/")}
             sx={{
               fontSize: 18,
+              cursor: "pointer",  
               fontWeight: 800,
               letterSpacing: "0.2rem",
               color: "#fff",
@@ -143,7 +149,6 @@ export default function Sidebar() {
         </Stack>
       </Box>
 
-      {logoutLoading && <ScreenLoader open message="Logging out... 🤯" />}
     </>
   );
 }

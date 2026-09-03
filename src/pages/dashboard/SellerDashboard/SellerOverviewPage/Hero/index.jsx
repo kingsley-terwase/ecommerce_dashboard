@@ -4,9 +4,21 @@ import { AddFilled } from "@fluentui/react-icons";
 import { Box, Stack } from "@mui/material";
 import { useState } from "react";
 import AddAdminModal from "../Modal/AddAdminModal";
+import { useAuthStore } from "@/store/auth";
+
+const TODAY = new Date().toLocaleDateString(undefined, {
+  weekday: "long",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
 
 export default function Hero() {
   const [addAdmin, setAddAdmin] = useState(false);
+  // @ts-ignore
+  const user = useAuthStore((s) => s.user);
+
+  const displayName = user?.firstname || "there";
 
   /** @returns {void} */
   const handleOpen = () => {
@@ -26,9 +38,9 @@ export default function Hero() {
       gap={spacingTokens.lg}
     >
       <Box>
-        <Typography variant="h1">👋 Welcome Back, Kingsley</Typography>
+        <Typography variant="h1">👋 Welcome Back, {displayName}</Typography>
         <Typography variant="body1" color="secondary">
-          Wednesday, March 25, 2026
+          {TODAY}
         </Typography>
       </Box>
 

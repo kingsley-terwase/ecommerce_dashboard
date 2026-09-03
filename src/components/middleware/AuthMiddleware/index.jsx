@@ -7,6 +7,7 @@ import { useEffect } from "react";
  * @param {import("react").ReactNode} props.children
  */
 export default function AuthMiddleware({ children }) {
+  // @ts-ignore
   const { token } = useAuthStore.getState();
   const notify = useNotification();
 
