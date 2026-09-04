@@ -54,9 +54,8 @@ export const useLogin = () => {
                 return { success: false, message };
             }
 
-            const { password: _omit, role, ...user } = result;
+            const { password: _omit, role, csrfToken, ...user } = result;
             const permission = { role };
-
             if (!Object.values(ROLES).includes(role)) {
                 const msg = `Unrecognized role "${role}" returned by the server`;
                 notifyError(msg);
@@ -64,8 +63,7 @@ export const useLogin = () => {
                 return { success: false, message: msg };
             }
 
-            setAuth({ user, permission });
-
+            setAuth({ user, permission, csrfToken });
             notifySuccess(message || "Login successful");
             setLoading(false);
             navigate(getRoleBasePath(permission));
@@ -128,32 +126,32 @@ export const useSignup = () => {
 
 /** POST /auth/signout */
 export const useLogout = () => {
-  const [loading, setLoading] = useState(false);
-  const clearAuth = useAuthStore((s) => s.clearAuth);
-  const navigate = useNavigate(); // add this
-  const { success: notifySuccess, error: notifyError } = useNotification();
+    const [loading, setLoading] = useState(false);
+    const clearAuth = useAuthStore((s) => s.clearAuth);
+    const navigate = useNavigate(); // add this
+    const { success: notifySuccess, error: notifyError } = useNotification();
 
-  const logout = async () => {
-    setLoading(true);
-    try {
-      await axiosInstance.post("/auth/signout");
-      clearAuth();
-      notifySuccess("Signed out successfully");
-      setLoading(false);
-      navigate("/login"); // add this — send them somewhere that actually exists
-      return { success: true };
-    } catch (error) {
-      clearAuth();
-      const errorMessage = getErrorMessage(error, "Sign out failed");
-      notifyError(errorMessage);
-      setLoading(false);
-      navigate("/login"); // add this too — still logged out locally even if the API call failed
-      return { success: false, message: errorMessage };
-    }
-  };
+    const logout = async () => {
+        setLoading(true);
+        try {
+            await axiosInstance.post("/auth/signout");
+            clearAuth();
+            notifySuccess("Signed out successfully");
+            setLoading(false);
+            navigate("/login"); // add this — send them somewhere that actually exists
+            return { success: true };
+        } catch (error) {
+            clearAuth();
+            const errorMessage = getErrorMessage(error, "Sign out failed");
+            notifyError(errorMessage);
+            setLoading(false);
+            navigate("/login"); // add this too — still logged out locally even if the API call failed
+            return { success: false, message: errorMessage };
+        }
+    };
 
-  return { logout, loading };
-}; 
+    return { logout, loading };
+};
 
 /** POST /auth/password-reset/request */
 export const useForgotPassword = () => {

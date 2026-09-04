@@ -52,6 +52,26 @@ export function useNavigationMenu() {
         color: "#ddac0a",
         icon: PersonAvailableRegular,
       },
+         {
+        label: "Admin",
+        path: "/dashboard/admin/admins",
+        color: "#90f50b",
+        icon: PersonAvailableRegular,
+      },
+
+      {
+        label: "Admin Roles",
+        path: "/dashboard/admin/admin-roles",
+        color: "#f50b64",
+        icon: PersonAvailableRegular,
+      },
+
+      {
+        label: "Admin Permissions",
+        path: "/dashboard/admin/admin-permissions",
+        color: "#0bf5c2",
+        icon: PersonAvailableRegular,
+      },
       {
         label: "Seller Directories",
         path: "/dashboard/admin/seller-directory",

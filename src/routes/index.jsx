@@ -24,6 +24,7 @@ import {
   PromotionsPage,
   ReviewsPage,
   SellerSettingsPage,
+  AdminRolesPage,
 } from "@/pages/dashboard";
 import OrderDetail from "@/pages/dashboard/SellerDashboard/OrderPage/OrderDetail";
 import {
@@ -69,6 +70,8 @@ import SupportTicketsPage from "@/pages/dashboard/AdminDashboard/SupportTicketsP
 import RequireAuth from "@/Utils/RequireAuth";
 import NotFoundPage from "@/pages/public/NotFoundPage";
 import ForgotPasswordPage from "@/pages/public/Auth/ForgotPassword";
+import AdminPermissionsPage from "@/pages/dashboard/AdminDashboard/AdminPermissions";
+import AdminsPage from "@/pages/dashboard/AdminDashboard/Admin";
 
 export default function Routes() {
   // Reactive subscription — NOT .getState(). A snapshot read here means this
@@ -212,6 +215,16 @@ export default function Routes() {
                 path="/dashboard/admin/seller-approvals"
                 element={<SellerAprovalsPage />}
               />
+              <Route
+                path="/dashboard/admin/admin-roles"
+                element={<AdminRolesPage />}
+              />
+              <Route
+                path="/dashboard/admin/admin-permissions"
+                element={<AdminPermissionsPage />}
+              />
+              <Route path="/dashboard/admin/admins" element={<AdminsPage />} />
+              <Route path="/dashboard/admin/admins/:adminId/permissions" element={<AdminPermissionsPage />} />
               <Route
                 path="/dashboard/admin/listing-moderation"
                 element={<ListingModerationPage />}

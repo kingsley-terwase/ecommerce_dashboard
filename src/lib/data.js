@@ -52,6 +52,14 @@ export const namedRoutes = {
     label: "Seller Approvals",
     icon: PersonStarRegular,
   },
+  "/dashboard/admin/admin-roles": {
+    label: "Admin Roles",
+    icon: PersonStarRegular,
+  },
+   "/dashboard/admin/admin-permissions": {
+    label: "Admin Permissions",
+    icon: PersonStarRegular,
+  },
   "/dashboard/admin/seller-directory": {
     label: "Seller Directories",
     icon: PersonStarRegular,

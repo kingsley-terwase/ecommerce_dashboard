@@ -21,3 +21,4 @@ export { default as MessagesPage } from "./SellerDashboard/MessagesPage";
 export { default as PromotionsPage } from "./SellerDashboard/PromotionsPage";
 export { default as ReviewsPage } from "./SellerDashboard/ReviewsPage";
 export { default as SellerSettingsPage } from "./SellerDashboard/SellerSettingsPage";
+export { default as AdminRolesPage } from "./AdminDashboard/AdminRoles";

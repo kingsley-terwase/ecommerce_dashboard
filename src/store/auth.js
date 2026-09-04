@@ -1,20 +1,26 @@
-// @ts-nocheck
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 /** @typedef {Record<string, any>} User */
 /** @typedef {{ role: string }} Permission */
 
-/** @type {import('zustand').StoreApi<{user: User|null, permission: Permission|null, isAuthenticated: boolean, setAuth: Function, clearAuth: Function}>} */
 export const useAuthStore = create(
   persist(
     (set) => ({
       user: null,
       permission: null,
       isAuthenticated: false,
+      csrfToken: null, 
 
-      setAuth: ({ user, permission }) => set({ user, permission, isAuthenticated: true }),
-      clearAuth: () => set({ user: null, permission: null, isAuthenticated: false }),
+      // @ts-ignore
+      setAuth: ({ user, permission, csrfToken }) =>
+        set({ user, permission, isAuthenticated: true, csrfToken: csrfToken ?? null }),
+
+      // For updating just the token alone, e.g. after a session refresh
+      // that rotates it without touching the rest of auth state.
+      setCsrfToken: (/** @type {any} */ csrfToken) => set({ csrfToken }),
+
+      clearAuth: () => set({ user: null, permission: null, isAuthenticated: false, csrfToken: null }),
     }),
     { name: "tetyhub_auth_user" }
   )

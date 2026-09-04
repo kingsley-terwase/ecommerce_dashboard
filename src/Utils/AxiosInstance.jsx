@@ -4,7 +4,25 @@ import { useAuthStore } from "../store/auth";
 const axiosInstance = axios.create({
   // @ts-ignore
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/v1/api",
-  withCredentials: true, // sends the httpOnly session cookie automatically — replaces your old Bearer header
+  withCredentials: true,
+});
+
+// Attach the CSRF token to every state-changing request. It's not a cookie
+// (backend returns it in the login response body), so axios can't auto-send
+// it — we read it from the store ourselves on every request.
+axiosInstance.interceptors.request.use((config) => {
+  const method = config.method?.toLowerCase();
+  // @ts-ignore
+  const isMutating = ["post", "put", "patch", "delete"].includes(method);
+
+  if (isMutating) {
+    const csrfToken = useAuthStore.getState().csrfToken;
+    if (csrfToken) {
+      config.headers["x-csrf-token"] = csrfToken;
+    }
+  }
+
+  return config;
 });
 
 // Auto-refresh the session on a 401, then retry the original request once.
@@ -39,7 +57,17 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await axiosInstance.post("/auth/refresh-session");
+        const refreshResponse = await axiosInstance.post("/auth/refresh-session");
+
+        // ⚠️ Unconfirmed: does refresh-session also rotate and return a new
+        // csrfToken? If your backend does, this picks it up automatically.
+        // If refresh-session's response doesn't include one, this is a
+        // harmless no-op and the old token keeps being used.
+        const newCsrfToken = refreshResponse.data?.result?.csrfToken;
+        if (newCsrfToken) {
+          useAuthStore.getState().setCsrfToken(newCsrfToken);
+        }
+
         flushQueue(null);
         return axiosInstance(originalRequest);
       } catch (refreshError) {
